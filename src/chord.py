@@ -17,7 +17,7 @@ class Node:
         self.ip = ip
         self.port = port
         self.address = (ip, port)
-        self.id = getHash(ip + ':' + str(port))
+        self.id = getHash(f'{ip}:{str(port)}')
         self.pred = (ip, port)
         self.predID = self.id
         self.succ = (ip, port)
@@ -86,7 +86,7 @@ class Node:
         '''
         if rDataList:
             peerIPport = rDataList[1]
-            peerID = getHash(peerIPport[0] + ':' + str(peerIPport[1]))
+            peerID = getHash(f'{peerIPport[0]}:{str(peerIPport[1])}')
             oldPred = self.pred
             self.pred = peerIPport
             self.predID = peerID
@@ -159,12 +159,12 @@ class Node:
     def updateSucc(self, rDataList):
         newSucc = rDataList[2]
         self.succ = newSucc
-        self.succID = getHash(newSucc[0] + ':' + str(newSucc[1]))
-    
+        self.succID = getHash(f'{newSucc[0]}:{str(newSucc[1])}')
+
     def updatePred(self, rDataList):
         newPred = rDataList[2]
         self.pred = newPred
-        self.predID = getHash(newPred[0] + ':' + str(newPred[1]))
+        self.predID = getHash(f'{newPred[0]}:{str(newPred[1])}')
 
     def start(self):
         '''
@@ -176,7 +176,7 @@ class Node:
         while True:
             print('Listening to other clients')
             self.asAClientThread()
-    
+
     def pingSucc(self):
         while True:
             # Ping every 5 seconds
@@ -201,7 +201,7 @@ class Node:
                         break
                 if newSuccFound:
                     self.succ = value[1]
-                    self.succID = getHash(self.succ[0] + ':' + str(self.succ[1]))
+                    self.succID = getHash(f'{self.succ[0]}:{str(self.succ[1])}')
                     # Inform new succ to update its pred to me now
                     pSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     pSocket.connect(self.succ)
@@ -254,9 +254,9 @@ class Node:
             peerSocket.sendall(pickle.dumps(sDataList))
             rDataList = pickle.loads(peerSocket.recv(BUFFER))
             self.pred = rDataList[0]
-            self.predID = getHash(self.pred[0] + ':' + str(self.pred[1]))
+            self.predID = getHash(f'{self.pred[0]}:{str(self.pred[1])}')
             self.succ = recvIPPort
-            self.succID = getHash(recvIPPort[0] + ':' + str(recvIPPort[1]))
+            self.succID = getHash(f'{recvIPPort[0]}:{str(recvIPPort[1])}')
             sDataList = [4, 1, self.address]
             pSocket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             pSocket2.connect(self.pred)
@@ -265,7 +265,7 @@ class Node:
             peerSocket.close()
         except socket.error:
             print('Socket error. Recheck IP/Port.')
-    
+
     def leaveNetwork(self):
         # First inform my succ to update its pred
         pSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -353,7 +353,7 @@ class Node:
             except socket.error:
                 print('Connection denied while getting Successor')
         return recvIPPort
-    
+
     def updateFingerTable(self):
         for i in range(MAX_BITS):
             entryId = (self.id + (2 ** i)) % MAX_NODES
@@ -361,9 +361,9 @@ class Node:
                 self.fingerTable[entryId] = (self.id, self.address)
                 continue
             recvIPPort = self.getSuccessor(self.succ, entryId)
-            recvId = getHash(recvIPPort[0] + ':' + str(recvIPPort[1]))
+            recvId = getHash(f'{recvIPPort[0]}:{str(recvIPPort[1])}')
             self.fingerTable[entryId] = (recvId, recvIPPort)
-    
+
     def updateOtherFingerTables(self):
         here = self.succ
         while True:
