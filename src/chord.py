@@ -56,12 +56,12 @@ class Node:
         rDataList = pickle.loads(connection.recv(BUFFER))
         connectionType = rDataList[0]
         if connectionType == 0:
-            print(f'Connection with: {address[0]}:{address[1]}')
+            print(f'Connection with: {address[0]} : {address[1]}')
             print('Join network request recevied')
             self.joinNode(connection, address, rDataList)
             self.printMenu()
         elif connectionType == 1:
-            print(f'Connection with: {address[0]}:{address[1]}')
+            print(f'Connection with: {address[0]} : {address[1]}')
             print('Upload/Download request recevied')
             self.transferFile(connection, address, rDataList)
             self.printMenu()
@@ -229,17 +229,20 @@ class Node:
         elif userChoice == '2':
             self.leaveNetwork()
         elif userChoice == '3':
-            filename = input('Enter filename: ')
-            fileID = getHash(filename)
-            recvIPport = self.getSuccessor(self.succ, fileID)
-            self.uploadFile(filename, recvIPport, True)
-        elif userChoice == '4':
-            filename = input('Enter filename: ')
-            self.downloadFile(filename)
-        elif userChoice == '5':
             self.printFingerTable()
-        elif userChoice == '6':
-            print(f'My ID: {self.id}, Predecessor: {self.predID}, Successor: {self.succID}')
+        elif userChoice == '4':
+            print(f'My ID: {self.id}')
+            print(f'Predecessor: {self.predID}')
+            print(f'Successor: {self.succID}')
+        # elif userChoice == '5':
+        #     filename = input('Enter filename: ')
+        #     fileID = getHash(filename)
+        #     recvIPport = self.getSuccessor(self.succ, fileID)
+        #     self.uploadFile(filename, recvIPport, True)
+        #     self.printFingerTable()
+        # elif userChoice == '6':
+        #     filename = input('Enter filename: ')
+        #     self.downloadFile(filename)
 
     def sendJoinRequest(self, ip, port):
         try:
@@ -297,7 +300,7 @@ class Node:
         self.succID = self.id
         self.fingerTable.clear()
         print(self.address, 'has left the network')
-    
+
     def uploadFile(self, filename, recvIPport, replicate):
         print('Uploading file', filename)
         sDataList = [1]
@@ -439,9 +442,9 @@ class Node:
                 self.downloadFile(filename)
 
     def printMenu(self):
-        print('\nChoose an option:\n1. Join Network\n2. Leave Network')
-        print('3. Upload File\n4. Download File\n5. Print Finger Table')
-        print('6. Print my predecessor and successor\n')
+        print('\nChoose an option:\n1. Join network\n2. Leave network')
+        print('3. Print finger table\n4. Print my predecessor and successor\n')
+        # print('5. Upload File\n6. Download File\n')
 
     def printFingerTable(self):
         print('Printing Finger Table')
@@ -451,7 +454,7 @@ class Node:
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
-        print('Arguments not supplied (Defaults used)')
+        print('Arguments not supplied (defaults used)')
     else:
         IP = sys.argv[1]
         PORT = int(sys.argv[2])
